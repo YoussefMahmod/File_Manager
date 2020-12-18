@@ -3,7 +3,7 @@ import shutil
 
 
 def path_exist(path):
-    return os.path.exists(path)
+    return os.path.exists(path) is True
 
 
 def check_dir(di):
@@ -15,12 +15,27 @@ def check_dir(di):
 
 class FileManager:
     def __init__(self):
-        self.root = None
+        self.root = ""
         self.no_files = 0
-        self.destination_dir = None
+        self.destination_dir = ""
 
     def menu(self):
         pass
+
+    def prep_new_dir(self, new_dir):
+        parent = self.root.split('/')
+        parent.pop(-1)
+        created_root = '/'.join(parent) + '/'
+        created_root += new_dir
+        self.destination_dir = created_root
+        return created_root
+
+    def create_dir(self, new_dir):
+        if path_exist(new_dir) is True:
+            return False
+        else:
+            os.mkdir(new_dir)
+            return True
 
     def init_root(self, root):
         if check_dir(root):
@@ -32,30 +47,15 @@ class FileManager:
             print("Invalid Path Try again!")
             return False
 
-    def prep_new_dir(self, new_dir):
-        parent = self.root.split('/')
-        parent.pop(-1)
-        created_root = '/'.join(parent) + '/'
-        created_root += new_dir
-        return created_root
-
-    def create_dir(self, new_dir):
-        if path_exist(new_dir):
-            return False
-        else:
-            os.mkdir(new_dir)
-            self.destination_dir = new_dir
-            return True
-
     def organize_by_extensions(self, new_dir):
         # Prepare a destination directory path
         self.prep_new_dir(new_dir)
 
         # Create a destination directory
         if (self.create_dir(self.destination_dir)) is False:  # if the destination is already exists
-            print("[OK] Sorting will be in-place ..")
+            print(f"[OK] Destination file founded successfully at {self.destination_dir} ..")
         else:
-            print(f"[OK] {new_dir} is created successfully ..")
+            print(f"[OK] {new_dir} is created successfully at {self.destination_dir} ..")
 
         # Move all files from root folder with a certain (ext) to our new root folder under a folder named -> ("ext") #
         for (path, dirs, files) in os.walk(self.root):
